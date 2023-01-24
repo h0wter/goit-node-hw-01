@@ -1,11 +1,10 @@
-import { nanoid } from "nanoid";
-import fs from "fs/promises";
-import path from "path";
+import { nanoid } from 'nanoid';
+import fs from 'fs/promises';
+import path from 'path';
 
-const contactsPath = path.resolve("./db/contacts.json");
+const contactsPath = path.resolve('./db/contacts.json');
 
-// TODO: задокументировать каждую функцию
-async function listContacts() {
+export async function listContacts() {
   try {
     const contacts = await fs.readFile(contactsPath);
     return JSON.parse(contacts);
@@ -14,25 +13,24 @@ async function listContacts() {
   }
 }
 
-async function getContactById(contactId) {
+export async function getContactById(contactId) {
   const contacts = await listContacts();
-  const contact = contacts.find(
-    (contact) => contact.id === contactId.toString()
-  );
+  const contact = contacts.find(contact => contact.id === contactId.toString());
   return contact;
 }
 
-async function removeContact(contactId) {
+export async function removeContact(contactId) {
   let contacts = await listContacts();
-  contacts = contacts.filter((contact) => contact.id !== contactId.toString());
+  contacts = contacts.filter(contact => contact.id !== contactId.toString());
   try {
     fs.writeFile(contactsPath, JSON.stringify(contacts));
+    return `Contact with id:${contactId} successfully removed`;
   } catch (error) {
     console.log(error);
   }
 }
 
-async function addContact(name, email, phone) {
+export async function addContact(name, email, phone) {
   const contacts = await listContacts();
   contacts.push({
     id: nanoid(),
@@ -42,9 +40,8 @@ async function addContact(name, email, phone) {
   });
   try {
     fs.writeFile(contactsPath, JSON.stringify(contacts));
+    return contacts.slice(-1)[0];
   } catch (error) {
     console.log(error);
   }
 }
-
-addContact("test", "test", "3232321");
